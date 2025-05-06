@@ -1,0 +1,7 @@
+install:
+  - mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file \
+      -Dfile=./maven/api/hawcx/hawcx/3.0.0/hawcx-3.0.0.aar \
+      -DpomFile=./maven/api/hawcx/hawcx/3.0.0/hawcx-3.0.0.pom
+
+script:
+  - echo "✅ Installed hawcx-3.0.0 AAR; skipping source build"
