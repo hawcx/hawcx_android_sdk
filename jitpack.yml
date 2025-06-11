@@ -1,12 +1,9 @@
-# hawcx-android-sdk/jitpack.yml
 jdk:
   - openjdk11
 
 install:
   # Install just the AAR + its POM into the local repo JitPack will publish
-  - mvn --batch-mode org.apache.maven.plugins:maven-install-plugin:3.2.0:install-file \
-      -Dfile=maven/api/hawcx/hawcx/4.0.0/hawcx-4.0.0.aar \
-      -DpomFile=maven/api/hawcx/hawcx/4.0.0/hawcx-4.0.0.pom
+  - mvn --batch-mode org.apache.maven.plugins:maven-install-plugin:3.2.0:install-file -Dfile=./maven/api/hawcx/hawcx/4.0.0/hawcx-4.0.0.aar -DpomFile=./maven/api/hawcx/hawcx/4.0.0/hawcx-4.0.0.pom
 
 script:
   - echo "✅ Binary artefacts installed – no sources or javadoc published"
