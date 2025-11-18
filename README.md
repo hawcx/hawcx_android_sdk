@@ -1,24 +1,102 @@
-# Hawcx Android SDK V4
+# Hawcx Android SDK V5
 
-Hawcx provides enterprise-grade passwordless authentication for Android applications, delivering a secure and frictionless login experience across all user devices with a unified authentication API.
+Hawcx provides enterprise-grade passwordless authentication for Android applications, delivering a secure and frictionless login experience across all user devices with unified V5 authentication that mirrors the latest iOS bridge.
 
-[![Kotlin Version](https://img.shields.io/badge/Kotlin-1.9+-blue.svg)](https://kotlinlang.org)
+[![Kotlin Version](https://img.shields.io/badge/Kotlin-2.0+-blue.svg)](https://kotlinlang.org)
 [![Platform](https://img.shields.io/badge/platform-Android_7.0+-green.svg)](https://developer.android.com/about)
 [![License](https://img.shields.io/badge/license-MIT-red.svg)](LICENSE)
 
-## What's New in V4
+## What's New in V5
 
-### 🚀 Unified Authentication API
-- **Single method for everything** - `authenticateV4()` handles login, signup, and device registration
-- **Intelligent flow detection** - SDK automatically determines the appropriate authentication flow
-- **Simplified integration** - Reduce complexity with fewer methods and callbacks to manage
+- **Hardware-backed security** – provisioning now derives Ed25519 keys with HKDF and stores secrets via the Android Keystore.
+- **OAuth-backed login** – one flow (`authenticateV5`/`submitOtpV5`) produces OAuth JWTs that align with the Hawcx server stack.
+- **Unified cross-platform API** – method signatures and callbacks match the iOS SDK, easing multi-platform integrations.
 
-### 🔄 Enhanced User Experience
-- **Seamless transitions** - Automatic progression from device registration to login
-- **Better error handling** - More specific error codes with actionable error messages
-- **Automatic session management** - JWT tokens managed securely in SharedPreferences
+## Installation
 
-## Table of Contents
+### 1. Add the Hawcx Maven repository
+
+```gradle
+repositories {
+    maven {
+        url = uri("https://raw.githubusercontent.com/hawcx/hawcx_android_sdk/main/maven")
+        // For private access, configure a GitHub token with read permissions.
+        credentials {
+            username = System.getenv("GITHUB_USER") ?: "<github-username>"
+            password = System.getenv("GITHUB_TOKEN") ?: "<github-token>"
+        }
+        metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+    google()
+    mavenCentral()
+}
+```
+
+> **Private repo tip:** when using a GitHub personal access token, supply it as the password and any non-empty string (or your username) as the user.
+
+### 2. Depend on the SDK
+
+```gradle
+dependencies {
+    implementation "api.hawcx:hawcx:5.1.0"
+}
+```
+
+Runtime dependencies (Retrofit, OkHttp, Coroutines, Biometric, BouncyCastle, Play Services, etc.) are declared in the published POM and are pulled in automatically.
+
+## Getting Started (V5)
+
+```kotlin
+val oauthConfig = HawcxOAuthConfig(
+    tokenEndpoint = "https://dev-api.hawcx.com/hc_auth/v5/oauth/token",
+    clientId = "hawcx-mobile",
+    publicKeyPem = """
+        -----BEGIN PUBLIC KEY-----
+        ...
+        -----END PUBLIC KEY-----
+    """.trimIndent()
+)
+
+val hawcxSdk = HawcxSDK(
+    context = applicationContext,
+    projectApiKey = BuildConfig.HAWCX_PROJECT_KEY,
+    oauthConfig = oauthConfig // optional when exchanging auth codes for tokens
+)
+
+hawcxSdk.authenticateV5("user@example.com", object : AuthV5Callback {
+    override fun onOtpRequired() {
+        // Prompt the user for their OTP and forward it to submitOtpV5(...)
+    }
+
+    override fun onAuthSuccess(accessToken: String, refreshToken: String, isLoginFlow: Boolean) {
+        // Tokens are also persisted in the credential store for later use.
+    }
+
+    override fun onError(errorCode: AuthV5ErrorCode, errorMessage: String) {
+        // Present UI feedback or log analytics.
+    }
+})
+
+// Later, submit the OTP once the user provides it.
+hawcxSdk.submitOtpV5(otpFromUser)
+```
+
+- Device registration provisions HKDF salts, wraps Ed25519 keys with Android Keystore, and records metadata via `V5CredentialStore`.
+- Login flows reuse stored state and only request OAuth authorization codes when required.
+- Tokens are saved to the secure store and the last logged-in user is recorded for push support.
+
+## Backwards Compatibility
+
+Legacy V4 APIs (`authenticateV4`, `submitOtpV4`, etc.) remain available for existing deployments. They continue to use the Paillier challenge/response pipeline and can coexist with V5 flows. The remainder of this document preserves the V4 reference material for teams still migrating.
+
+---
+
+## Legacy V4 Reference
+
+### Table of Contents
 
 - [Installation](#installation)
 - [Getting Started](#getting-started)
