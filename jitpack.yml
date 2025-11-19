@@ -3,7 +3,7 @@ jdk:
 
 install:
   # Install just the AAR + its POM into the local repo JitPack will publish
-  - mvn --batch-mode org.apache.maven.plugins:maven-install-plugin:3.2.0:install-file -Dfile=./maven/api/hawcx/hawcx/5.1.0/hawcx-5.1.0.aar -DpomFile=./maven/api/hawcx/hawcx/5.1.0/hawcx-5.1.0.pom
+  - mvn --batch-mode org.apache.maven.plugins:maven-install-plugin:3.2.0:install-file -Dfile=./maven/api/hawcx/hawcx/5.1.1/hawcx-5.1.1.aar -DpomFile=./maven/api/hawcx/hawcx/5.1.1/hawcx-5.1.1.pom
 
 script:
   - echo "✅ Binary artefacts installed – no sources or javadoc published"

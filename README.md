@@ -41,7 +41,7 @@ repositories {
 
 ```gradle
 dependencies {
-    implementation "api.hawcx:hawcx:5.1.0"
+    implementation "api.hawcx:hawcx:5.1.1"
 }
 ```
 

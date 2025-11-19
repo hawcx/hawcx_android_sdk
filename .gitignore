@@ -25,3 +25,4 @@ local.properties
 *.iml
 # macOS
 .DS_Store
+scripts/publish-maven-sdk.sh
