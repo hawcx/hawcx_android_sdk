@@ -63,6 +63,7 @@ val oauthConfig = HawcxOAuthConfig(
 val hawcxSdk = HawcxSDK(
     context = applicationContext,
     projectApiKey = BuildConfig.HAWCX_PROJECT_KEY,
+    baseUrl = BuildConfig.HAWCX_BASE_URL, // host only; SDK appends /hc_auth
     oauthConfig = oauthConfig // optional when exchanging auth codes for tokens
 )
 
@@ -83,6 +84,8 @@ hawcxSdk.authenticateV5("user@example.com", object : AuthV5Callback {
 // Later, submit the OTP once the user provides it.
 hawcxSdk.submitOtpV5(otpFromUser)
 ```
+
+`baseUrl` should be the customer-specific host Hawcx provisioned for your tenant (for example `https://hawcx-api.hawcx.com`). Pass only the scheme + host; the SDK derives `/hc_auth`, `/ha_login`, `/hc_reg`, and other endpoints from it so the same binary works for every dedicated environment.
 
 - Device registration provisions HKDF salts, wraps Ed25519 keys with Android Keystore, and records metadata via `V5CredentialStore`.
 - Login flows reuse stored state and only request OAuth authorization codes when required.
